@@ -9,11 +9,11 @@ project (lykovAddInNative LANGUAGES CXX DESCRIPTION "Lykov (AddInNative)")
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-set(ENABLE_BASE_FUNCTION false)
-set(ENABLE_HTTP_CLIENT false)
+set(ENABLE_BASE_FUNCTION true)
+set(ENABLE_HTTP_CLIENT true)
 set(ENABLE_POSTGRE_SQL true)
-set(ENABLE_MY_SQL false)
-set(output_directory ${CMAKE_SOURCE_DIR}/dllResult)
+set(ENABLE_MY_SQL true)
+set(output_directory ${CMAKE_SOURCE_DIR}/bin)
 
 # Базовые параметры
 set(VCPKG_LIBRARY_LINKAGE static)

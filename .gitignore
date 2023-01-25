@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# LYKOV
+lykovAddInNative.def
+lykovAddInNative.rc
+version.script
