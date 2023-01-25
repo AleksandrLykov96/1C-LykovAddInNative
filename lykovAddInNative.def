@@ -1,0 +1,8 @@
+LIBRARY    ".DLL"
+
+EXPORTS
+GetClassObject
+DestroyObject
+GetClassNames
+SetPlatformCapabilities
+GetAttachType

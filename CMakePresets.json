@@ -1,0 +1,161 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "LinBase",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "/home/lykov-aa/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        },
+        "VCPKG_TARGET_ARCHITECTURE": "x64",
+        "VCPKG_CMAKE_SYSTEM_NAME": "Linux",
+        "TypeCompile": "lin",
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "Linux"
+          ]
+        },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        }
+      }
+    },
+    {
+      "name": "WinBase",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "D:\\cpp\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "Windows"
+          ]
+        },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        }
+      }
+    },
+    {
+      "name": "Win64Base",
+      "hidden": true,
+      "inherits": "WinBase",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static",
+        "VCPKG_TARGET_ARCHITECTURE": "x64"
+      }
+    },
+    {
+      "name": "Win86Base",
+      "hidden": true,
+      "inherits": "WinBase",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static",
+        "VCPKG_TARGET_ARCHITECTURE": "x86"
+      }
+    },
+    {
+      "name": "Win-x64-deb",
+      "displayName": "Windows x64 (Debug)",
+      "description": "Windows x64 (Debug)",
+      "inherits": "Win64Base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_BUILD_TYPE": "Debug",
+        "TypeCompile": "win-x64-deb"
+      }
+    },
+    {
+      "name": "Win-x64",
+      "displayName": "Windows x64 (Release)",
+      "description": "Windows x64 (Release)",
+      "inherits": "Win64Base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_BUILD_TYPE": "Release",
+        "TypeCompile": "win-x64"
+      }
+    },
+    {
+      "name": "Win-x86-deb",
+      "displayName": "Windows x86 (Debug)",
+      "description": "Windows x86 (Debug)",
+      "inherits": "Win86Base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_BUILD_TYPE": "Debug",
+        "TypeCompile": "win-x86-deb"
+      }
+    },
+    {
+      "name": "Win-x86",
+      "displayName": "Windows x86 (Release)",
+      "description": "Windows x86 (Release)",
+      "inherits": "Win86Base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_BUILD_TYPE": "Release",
+        "TypeCompile": "win-x86"
+      }
+    },
+    {
+      "name": "Linux-x64",
+      "inherits": "LinBase",
+      "displayName": "Linux x64 (Release)",
+      "description": "Linux x64 (Release)",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_BUILD_TYPE": "Release",
+        "TypeCompile": "lin"
+      }
+    },
+    {
+      "name": "Linux-x64-deb",
+      "inherits": "LinBase",
+      "displayName": "Linux x64 (Debug)",
+      "description": "Linux x64 (Debug)",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_BUILD_TYPE": "Debug",
+        "TypeCompile": "lin-deb"
+      }
+    }
+  ]
+}
