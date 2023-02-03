@@ -2,22 +2,6 @@
 
 #pragma region Переопределение методов
 
-class LykovException;
-
-PostgreSQL::PostgreSQL() {
-	curl_global_sslset(CURLSSLBACKEND_OPENSSL, nullptr, nullptr); // Иначе данная библиотека не присоединяется к OpenSSL (при подключении пишет ошибки) 
-
-	m_Conn           = nullptr;
-	m_NonTransaction = nullptr;
-#ifdef __linux__
-	signal(SIGPIPE, SIG_IGN);
-#endif
-}
-
-PostgreSQL::~PostgreSQL() {
-	closeConnection();
-}
-
 const wchar_t* PostgreSQL::getNameExtension() {
 	return L"PostgreSQL";
 }
@@ -837,6 +821,20 @@ void PostgreSQL::reloadConnection() {
 #pragma endregion
 
 #pragma region Вспомогательные функции
+
+PostgreSQL::PostgreSQL() {
+	curl_global_sslset(CURLSSLBACKEND_OPENSSL, nullptr, nullptr); // Иначе данная библиотека не присоединяется к OpenSSL (при подключении пишет ошибки) 
+
+	m_Conn = nullptr;
+	m_NonTransaction = nullptr;
+#ifdef __linux__
+	signal(SIGPIPE, SIG_IGN);
+#endif
+}
+
+PostgreSQL::~PostgreSQL() {
+	closeConnection();
+}
 
 bool PostgreSQL::connectionEstablished() const {
 	return m_Conn && m_Conn->is_open();

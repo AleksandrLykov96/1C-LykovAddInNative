@@ -43,6 +43,8 @@ long BaseFunction::getMethodNParams(const unsigned short indexMethod) {
 		case gl_Index_Method_Pause:
 		case gl_Index_Method_String_To_Number:
 		case gl_Index_Method_Get_Screenshot:
+		case gl_Index_Method_StartTimer:
+		case gl_Index_Method_EndTimer:
 			return 1l;
 		case gl_Index_Method_Clear_String:
 		case gl_Index_Method_Decompress:
@@ -107,7 +109,9 @@ void BaseFunction::setParamDefValue(const unsigned short indexMethod, const long
 
 			break;
 		}
-		case gl_Index_Method_Get_Screenshot: {
+		case gl_Index_Method_Get_Screenshot:
+		case gl_Index_Method_StartTimer:
+		case gl_Index_Method_EndTimer: {
 			if (indexParam == 0l) {
 				setReturnedParam("", pvarParamDefValue);
 				return;
@@ -146,7 +150,7 @@ void BaseFunction::callMethodAsProc(const unsigned short indexMethod, const tVar
 			pause(paParams);
 			return;
 		case gl_Index_Method_StartTimer:
-			startTimer();
+			startTimer(paParams);
 			return;
 		default:
 			return;
@@ -183,7 +187,7 @@ void BaseFunction::callMethodAsFunc(const unsigned short indexMethod, tVariant* 
 			getUuid(pvarRetValue);
 			return;
 		case gl_Index_Method_EndTimer:
-			endTimer(pvarRetValue);
+			endTimer(paParams, pvarRetValue);
 			return;
 		default:
 			break;
@@ -420,14 +424,25 @@ void BaseFunction::getUuid(tVariant* pvarRetValue) const {
 	setReturnedParam<const std::string&>(gl_GetNewUuid(), pvarRetValue);
 }
 
-void BaseFunction::startTimer() {
-	m_StartTimer = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+void BaseFunction::startTimer(const tVariant* paParams) {
+	auto id = getInputParam<std::wstring>(paParams);
+	if (id.empty())
+		id = L"default";
+
+	m_MapTimer[id] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-void BaseFunction::endTimer(tVariant* pvarRetValue) const {
-	setReturnedParam(
-			static_cast<double>((std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_StartTimer)) / 1000000000.,
+void BaseFunction::endTimer(const tVariant* paParams, tVariant* pvarRetValue) const {
+	auto id = getInputParam<std::wstring>(paParams);
+	if (id.empty())
+		id = L"default";
+
+	if (const auto startTimer = m_MapTimer.find(id); startTimer != m_MapTimer.end())
+		setReturnedParam(
+			static_cast<double>((std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTimer->second)) / 1000000000.,
 			pvarRetValue);
+	else
+		setReturnedParam(0, pvarRetValue);
 }
 
 #pragma endregion
@@ -435,7 +450,7 @@ void BaseFunction::endTimer(tVariant* pvarRetValue) const {
 #pragma region Вспомогательные методы
 
 BaseFunction::BaseFunction() {
-	m_StartTimer = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	m_MapTimer[L"default"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void BaseFunction::jsonRecursiveCorrectKey(rapidjson::Document& object, const std::wstring& wcorrectSymbols, const std::wstring& wdefaultName, const std::wstring& wprefix) {

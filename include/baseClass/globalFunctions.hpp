@@ -32,6 +32,7 @@
 #include <codecvt>
 #include <execution>
 #include <thread>
+#include <map>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/locale.hpp>

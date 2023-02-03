@@ -2,15 +2,6 @@
 
 #pragma region Переопределение методов
 
-MySqlConn::MySqlConn() {
-	conn = mysql_init(nullptr);
-	mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, "LYKOV_ADD_IN_NATIVE");
-}
-
-MySqlConn::~MySqlConn() {
-	mysql_close(conn);
-}
-
 const wchar_t* MySqlConn::getNameExtension() {
 	return L"MySqlConn";
 }
@@ -115,6 +106,15 @@ void MySqlConn::callMethodAsFunc(const unsigned short indexMethod, tVariant* pva
 #pragma endregion
 
 #pragma region Функции компоненты
+
+MySqlConn::MySqlConn() {
+	conn = mysql_init(nullptr);
+	mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, "LYKOV_ADD_IN_NATIVE");
+}
+
+MySqlConn::~MySqlConn() {
+	mysql_close(conn);
+}
 
 void MySqlConn::connectToDb(const tVariant* paParams) const {
 	const auto host = getInputParam<std::string>(paParams, 0l);

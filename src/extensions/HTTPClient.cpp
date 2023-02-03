@@ -2,33 +2,6 @@
 
 #pragma region Переопределение методов
 
-HttpClient::HttpClient() {
-	curl_global_sslset(CURLSSLBACKEND_OPENSSL, nullptr, nullptr);
-	curl_global_init(CURL_GLOBAL_ALL);
-
-	// Инициализация подключений
-	m_Cm = curl_multi_init();
-	curl_multi_setopt(m_Cm, CURLMOPT_MAXCONNECTS, m_MaxConnects);
-	curl_multi_setopt(m_Cm, CURLMOPT_MAX_CONCURRENT_STREAMS, m_MaxConcurrentStream);
-	curl_multi_setopt(m_Cm, CURLMOPT_MAX_HOST_CONNECTIONS, m_MaxHostConnection);
-	curl_multi_setopt(m_Cm, CURLMOPT_MAX_TOTAL_CONNECTIONS, m_MaxTotalConnection);
-
-	m_Sh = curl_share_init();
-	curl_share_setopt(m_Sh, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
-
-	if (m_EnableCookies)
-		curl_share_setopt(m_Sh, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
-}
-
-HttpClient::~HttpClient() {
-	clearAllThreads();
-
-	curl_share_cleanup(m_Sh);
-	curl_multi_cleanup(m_Cm);
-
-	curl_global_cleanup();
-}
-
 const wchar_t* HttpClient::getNameExtension() {
 	return L"HttpClient";
 }
@@ -332,6 +305,33 @@ void HttpClient::getResultsRegisteredRequests(tVariant* pvarRetValue) {
 #pragma endregion
 
 #pragma region Вспомогательные функции
+
+HttpClient::HttpClient() {
+	curl_global_sslset(CURLSSLBACKEND_OPENSSL, nullptr, nullptr);
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	// Инициализация подключений
+	m_Cm = curl_multi_init();
+	curl_multi_setopt(m_Cm, CURLMOPT_MAXCONNECTS, m_MaxConnects);
+	curl_multi_setopt(m_Cm, CURLMOPT_MAX_CONCURRENT_STREAMS, m_MaxConcurrentStream);
+	curl_multi_setopt(m_Cm, CURLMOPT_MAX_HOST_CONNECTIONS, m_MaxHostConnection);
+	curl_multi_setopt(m_Cm, CURLMOPT_MAX_TOTAL_CONNECTIONS, m_MaxTotalConnection);
+
+	m_Sh = curl_share_init();
+	curl_share_setopt(m_Sh, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
+
+	if (m_EnableCookies)
+		curl_share_setopt(m_Sh, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+}
+
+HttpClient::~HttpClient() {
+	clearAllThreads();
+
+	curl_share_cleanup(m_Sh);
+	curl_multi_cleanup(m_Cm);
+
+	curl_global_cleanup();
+}
 
 HttpClient::EasyParamStruct::EasyParamStruct(const CURLoption opt, const char* name, const curl_easytype type, const bool setThisValue) {
 	this->id           = opt;

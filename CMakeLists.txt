@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt: проект CMake для lykovAddInNative; включите исходный код и определения,
 # укажите здесь логику для конкретного проекта.
 #
-cmake_minimum_required (VERSION 3.9)
+cmake_minimum_required (VERSION 3.20)
 cmake_policy(SET CMP0091 NEW)
 
 # Общие параметры
@@ -106,6 +106,7 @@ find_package(Boost COMPONENTS ${LYKOV_BOOST_LIBS} REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(stduuid CONFIG REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
+
 find_package(OpenSSL REQUIRED)
 
 link_directories(${Boost_LIBRARY_DIRS})
@@ -174,8 +175,15 @@ foreach(current_project_name ${LIST_EXTENSION_PROJECTS})
         target_link_libraries(${current_project_name} PRIVATE "Boost::${boost_lib}")
     endforeach()
 
-    target_link_libraries(${current_project_name} PRIVATE OpenSSL::Crypto OpenSSL::SSL rapidjson stduuid utf8cpp)
-   
+    target_link_libraries(${current_project_name} PRIVATE OpenSSL::Crypto OpenSSL::SSL rapidjson stduuid)
+
+    # Разные версии
+    if (WIN32)
+        target_link_libraries(${current_project_name} PRIVATE utf8cpp)
+    else()
+        target_link_libraries(${current_project_name} PRIVATE utf8::cpp)
+    endif()
+
     if (NOT WIN32)
         set_target_properties(${current_project_name} PROPERTIES LINK_FLAGS "-fPIC -std=c++17 -Wall -Wunknown-pragmas -pedantic -O3 -ldl -lc -lm -Wl,--no-as-needed -lpthread -Xlinker --version-script ${CMAKE_CURRENT_SOURCE_DIR}/version.script ")
     endif()

@@ -4,6 +4,7 @@
 #include <baseClass/baseExtensionClass.hpp>
 
 #include <set>
+#include <list>
 #include <curl/curl.h>
 
 constexpr unsigned short gl_Index_Prop_Max_Connects          = 5;

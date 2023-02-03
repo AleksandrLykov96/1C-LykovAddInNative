@@ -45,7 +45,7 @@ public:
 
 private:
 	const std::string m_CorrectValueForNumber = "0123456789.-";
-	long long m_StartTimer;
+	std::map<std::wstring, long long> m_MapTimer;
 
 	// Методы для вызова из 1С
 	void pause(const tVariant*) const; // Пауза (без нагрузки на процессор)
@@ -58,8 +58,8 @@ private:
 	void getScreenshot(const tVariant*, tVariant*) const; // Скриншот экрана (только на клиенте)
 	void interruptHandler(tVariant*) const; // Обработка прерывания
 	void getUuid(tVariant*) const; // Уникальный идентификатор
-	void startTimer(); // Начать замер
-	void endTimer(tVariant*) const; // Завершить замер
+	void startTimer(const tVariant*); // Начать замер
+	void endTimer(const tVariant*, tVariant*) const; // Завершить замер
 
 	// Вспомогательные методы
 	static void jsonRecursiveCorrectKey(rapidjson::Document&, const std::wstring&, const std::wstring&, const std::wstring&);
