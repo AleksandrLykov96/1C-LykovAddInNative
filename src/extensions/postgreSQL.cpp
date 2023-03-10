@@ -962,9 +962,9 @@ std::wstring PostgreSQL::arrayResultToJson(const pqxx::result& result, const Col
 
 	if (countOfRows == 0) {
 		if (toFile)
-			gl_WriteStringToFile(fileResult, L"{\"Успешно\":true,\"РезультатЗапроса\":[]}");
+			gl_WriteStringToFile(fileResult, L"{\"Успешно\":true,\"ТекстОшибки\":\"\",\"РезультатЗапроса\":[]}");
 
-		return L"{\"Успешно\":true,\"РезультатЗапроса\":[]}";
+		return L"{\"Успешно\":true,\"ТекстОшибки\":\"\",\"РезультатЗапроса\":[]}";
 	}
 
 	const auto tmp = getTypesOfColumns(result[0], columnsTypes);
@@ -976,12 +976,15 @@ std::wstring PostgreSQL::arrayResultToJson(const pqxx::result& result, const Col
 
 		writer.Key("Успешно");
 		writer.Bool(true);
+		
+		writer.Key("ТекстОшибки");
+		writer.String("");
 
 		writer.Key("РезультатЗапроса");
 
 		writer.StartArray();
 		std::for_each(result.begin(), result.end(), [&tmp, &writer](const auto& row) {
-			PostgreSQL::arrayResultToJson_WriteRow<rapidjson::StringBuffer>(row, tmp, writer);
+			PostgreSQL::	arrayResultToJson_WriteRow<rapidjson::StringBuffer>(row, tmp, writer);
 		});
 		writer.EndArray();
 		writer.EndObject();
@@ -1003,6 +1006,9 @@ std::wstring PostgreSQL::arrayResultToJson(const pqxx::result& result, const Col
 
 		writer.Key("Успешно");
 		writer.Bool(true);
+		
+		writer.Key("ТекстОшибки");
+		writer.String("");
 
 		writer.Key("РезультатЗапроса");
 
@@ -1014,7 +1020,7 @@ std::wstring PostgreSQL::arrayResultToJson(const pqxx::result& result, const Col
 		writer.EndObject();
 
 		fclose(fp);
-		return L"";
+		return L"{\"Успешно\":true,\"ТекстОшибки\":\"\",\"РезультатЗапроса\":[]}";
 	}
 }
 
