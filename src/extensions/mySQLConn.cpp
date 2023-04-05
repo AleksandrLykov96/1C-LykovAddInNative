@@ -6,6 +6,10 @@ const wchar_t* MySqlConn::getNameExtension() {
 	return L"MySqlConn";
 }
 
+const wchar_t* MySqlConn::getVersion() {
+	return L"1.0.0.16";
+}
+
 void MySqlConn::setMethodPropsExtension() {
 	// Свойства
 	m_PropNames[gl_Index_Prop_MySQL_Connection_Info] = NamesFor1C(L"ИнформацияОСоединении", L"ConnectionInfo");

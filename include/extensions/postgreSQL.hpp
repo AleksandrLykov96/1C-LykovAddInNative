@@ -13,30 +13,35 @@
 	#include <csignal>
 #endif
 
-constexpr unsigned short gl_Type_Column_Int     = 0;
-constexpr unsigned short gl_Type_Column_Double  = 1;
-constexpr unsigned short gl_Type_Column_Boolean = 2;
+constexpr unsigned short gl_Type_Column_PostgreSQL_OID        = 0;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Int16      = 1;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Int32      = 2;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Int64      = 3;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Float      = 4;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Double     = 5;
+constexpr unsigned short gl_Type_Column_PostgreSQL_LongDouble = 6;
+constexpr unsigned short gl_Type_Column_PostgreSQL_Boolean    = 7;
 
-constexpr unsigned short gl_Index_Prop_Connection_Established      = 5;
-constexpr unsigned short gl_Index_Prop_Connection_Host             = 6;
-constexpr unsigned short gl_Index_Prop_Connection_Db_Name          = 7;
-constexpr unsigned short gl_Index_Prop_Connection_Username         = 8;
-constexpr unsigned short gl_Index_Prop_Connection_Port             = 9;
-constexpr unsigned short gl_Index_Prop_Connection_Backend_Pid      = 10;
-constexpr unsigned short gl_Index_Prop_Connection_Sock             = 11;
-constexpr unsigned short gl_Index_Prop_Connection_Protocol_Version = 12;
-constexpr unsigned short gl_Index_Prop_Connection_Server_Version   = 13;
-constexpr unsigned short gl_Index_Prop_Connection_Client_Encoding  = 14;
+constexpr unsigned short gl_Index_Prop_Connection_Established      = gl_Index_Last_Prop + 1;
+constexpr unsigned short gl_Index_Prop_Connection_Host             = gl_Index_Last_Prop + 2;
+constexpr unsigned short gl_Index_Prop_Connection_Db_Name          = gl_Index_Last_Prop + 3;
+constexpr unsigned short gl_Index_Prop_Connection_Username         = gl_Index_Last_Prop + 4;
+constexpr unsigned short gl_Index_Prop_Connection_Port             = gl_Index_Last_Prop + 5;
+constexpr unsigned short gl_Index_Prop_Connection_Backend_Pid      = gl_Index_Last_Prop + 6;
+constexpr unsigned short gl_Index_Prop_Connection_Sock             = gl_Index_Last_Prop + 7;
+constexpr unsigned short gl_Index_Prop_Connection_Protocol_Version = gl_Index_Last_Prop + 8;
+constexpr unsigned short gl_Index_Prop_Connection_Server_Version   = gl_Index_Last_Prop + 9;
+constexpr unsigned short gl_Index_Prop_Connection_Client_Encoding  = gl_Index_Last_Prop + 10;
 
-constexpr unsigned short gl_Index_Method_Connect_Db                   = 0;
-constexpr unsigned short gl_Index_Method_Exec                         = 1;
-constexpr unsigned short gl_Index_Method_Init_Query                   = 2;
-constexpr unsigned short gl_Index_Method_Get_Result_Initialized_Query = 3;
-constexpr unsigned short gl_Index_Method_Initialize_1c                = 4;
-constexpr unsigned short gl_Index_Method_Put_Data                     = 5;
-constexpr unsigned short gl_Index_Method_Read_Data_From_Table         = 7;
-constexpr unsigned short gl_Index_Method_Read_Data_From_Query         = 8;
-constexpr unsigned short gl_Index_Method_Reload_Connection            = 9;
+constexpr unsigned short gl_Index_Method_Connect_Db                   = gl_Index_Last_Method + 1;
+constexpr unsigned short gl_Index_Method_Exec                         = gl_Index_Last_Method + 2;
+constexpr unsigned short gl_Index_Method_Init_Query                   = gl_Index_Last_Method + 3;
+constexpr unsigned short gl_Index_Method_Get_Result_Initialized_Query = gl_Index_Last_Method + 4;
+constexpr unsigned short gl_Index_Method_Initialize_1c                = gl_Index_Last_Method + 5;
+constexpr unsigned short gl_Index_Method_Put_Data                     = gl_Index_Last_Method + 6;
+constexpr unsigned short gl_Index_Method_Read_Data_From_Table         = gl_Index_Last_Method + 7;
+constexpr unsigned short gl_Index_Method_Read_Data_From_Query         = gl_Index_Last_Method + 8;
+constexpr unsigned short gl_Index_Method_Reload_Connection            = gl_Index_Last_Method + 9;
 
 class PostgreSQL final : public IBaseExtensionClass
 {
@@ -48,6 +53,7 @@ public:
 
 	// Переопределяемые методы
 	const wchar_t* getNameExtension() override; // Должен возвращать фактическое наименование расширения
+	const wchar_t* getVersion() override; // Должен возвращать номер версии компоненты
 	void setMethodPropsExtension() override; // Инициализация компоненты (дополнение методов и свойств компоненты)
 	void getPropByIndex(unsigned short, tVariant*) override; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
 	void setPropByIndex(unsigned short, tVariant*) override; // Должен установить значение параметра по индексу в tVariant

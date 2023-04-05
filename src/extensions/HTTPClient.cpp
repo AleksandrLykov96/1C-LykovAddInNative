@@ -6,6 +6,10 @@ const wchar_t* HttpClient::getNameExtension() {
 	return L"HttpClient";
 }
 
+const wchar_t* HttpClient::getVersion() {
+	return L"1.0.0.16";
+}
+
 void HttpClient::setMethodPropsExtension() {
 	// Свойства
 	m_PropNames[gl_Index_Prop_Max_Connects]          = NamesFor1C(L"МаксимальноеКоличествоСоединенийВКэше", L"MaxConnects");

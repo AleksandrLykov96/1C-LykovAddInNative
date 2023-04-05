@@ -16,9 +16,11 @@ constexpr unsigned short gl_Index_Prop_Event_Buffer    = 1;
 constexpr unsigned short gl_Index_Prop_Attach_Isolated = 2;
 constexpr unsigned short gl_Index_Prop_App_Version     = 3;
 constexpr unsigned short gl_Index_Prop_App_Type        = 4;
+constexpr unsigned short gl_Index_Last_Prop            = 5; // Номер версии
+
+constexpr short gl_Index_Last_Method = -1;
 
 // Основной класс для переопределения
-// Свойства нумеровать с 5 (добавлены свойства для всех компонент)
 class IBaseExtensionClass : public IComponentBase {
 public:
 	IBaseExtensionClass();
@@ -27,6 +29,7 @@ public:
 #pragma region Методы для переопределения в готовых классах
 
 	virtual const wchar_t* getNameExtension() = 0; // Должен возвращать фактическое наименование расширения
+	virtual const wchar_t* getVersion() = 0; // Должен возвращать номер версии компоненты
 	virtual void setMethodPropsExtension() = 0; // Инициализация компоненты (дополнение методов и свойств компоненты)
 	virtual void getPropByIndex(unsigned short, tVariant*) = 0; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
 	virtual void setPropByIndex(unsigned short, tVariant*) = 0; // Должен установить значение параметра по индексу в tVariant
@@ -81,6 +84,7 @@ protected:
 	IMemoryManager* m_IMemory;
 	bool m_ItsServer = false; // Флаг того, что компоненты подключена на сервере
 	const wchar_t* m_LastError = L""; // Текст последней ошибки
+	bool itsIsolate = false; // Флаг того, что подключение изолировано
 
 	NamesType m_PropNames; // Имена свойств для 1С
 	NamesType m_MethodNames; // Имена методов для 1С 
@@ -129,7 +133,6 @@ protected:
 
 private:
 	IAddInDefBase* m_IConnect;
-	bool itsIsolate = false; // ВРЕМЕННО (косяк при передаче некоторых данных из изолированного подключения в 1С)
 
 	// Вспомогательные функции
 	static long findNameFromList(const NamesType&, const WCHAR_T*);

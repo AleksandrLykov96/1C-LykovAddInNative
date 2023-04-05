@@ -29,6 +29,7 @@ bool IBaseExtensionClass::Init(void* pConnection) {
 	m_PropNames[gl_Index_Prop_Attach_Isolated] = NamesFor1C(L"ПодключениеИзолированно", L"AttachIsolated");
 	m_PropNames[gl_Index_Prop_App_Version]     = NamesFor1C(L"ВерсияПриложения", L"AppVersion");
 	m_PropNames[gl_Index_Prop_App_Type]        = NamesFor1C(L"ТипПриложения", L"AppType");
+	m_PropNames[gl_Index_Last_Prop]            = NamesFor1C(L"ВерсияКомпоненты", L"Version");
 
 	setMethodPropsExtension();
 
@@ -96,7 +97,7 @@ bool IBaseExtensionClass::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 			return true;
 		}
 		case gl_Index_Prop_Attach_Isolated:
-			setReturnedParam(getAttachedInfo() == IAttachedInfo::AttachedType::eAttachedIsolated, pvarPropVal);
+			setReturnedParam(itsIsolate, pvarPropVal);
 			return true;
 		case gl_Index_Prop_App_Version: {
 			const auto info = getPlatformInfo();
@@ -145,6 +146,9 @@ bool IBaseExtensionClass::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 
 			return true;
 		}
+		case gl_Index_Last_Prop:
+			setReturnedParam(getVersion(), pvarPropVal);
+			return true;
 		default:
 			try {
 				getPropByIndex(num, pvarPropVal);

@@ -12,18 +12,18 @@
 	#include <conio.h>
 #endif
 
-constexpr unsigned short gl_Index_Method_Pause                  = 0;
-constexpr unsigned short gl_Index_Method_String_To_Number       = 1;
-constexpr unsigned short gl_Index_Method_Clear_String           = 2;
-constexpr unsigned short gl_Index_Method_Clear_String_Json      = 3;
-constexpr unsigned short gl_Index_Method_Compress               = 4;
-constexpr unsigned short gl_Index_Method_Decompress             = 5;
-constexpr unsigned short gl_Index_Method_Current_Unix_Timestamp = 6;
-constexpr unsigned short gl_Index_Method_Get_Screenshot         = 7;
-constexpr unsigned short gl_Index_Method_Interrupt_Handler      = 8;
-constexpr unsigned short gl_Index_Method_UUID                   = 9;
-constexpr unsigned short gl_Index_Method_StartTimer             = 10;
-constexpr unsigned short gl_Index_Method_EndTimer               = 11;
+constexpr unsigned short gl_Index_Method_Pause                  = gl_Index_Last_Method + 1;
+constexpr unsigned short gl_Index_Method_String_To_Number       = gl_Index_Last_Method + 2;
+constexpr unsigned short gl_Index_Method_Clear_String           = gl_Index_Last_Method + 3;
+constexpr unsigned short gl_Index_Method_Clear_String_Json      = gl_Index_Last_Method + 4;
+constexpr unsigned short gl_Index_Method_Compress               = gl_Index_Last_Method + 5;
+constexpr unsigned short gl_Index_Method_Decompress             = gl_Index_Last_Method + 6;
+constexpr unsigned short gl_Index_Method_Current_Unix_Timestamp = gl_Index_Last_Method + 7;
+constexpr unsigned short gl_Index_Method_Get_Screenshot         = gl_Index_Last_Method + 8;
+constexpr unsigned short gl_Index_Method_Interrupt_Handler      = gl_Index_Last_Method + 9;
+constexpr unsigned short gl_Index_Method_UUID                   = gl_Index_Last_Method + 10;
+constexpr unsigned short gl_Index_Method_StartTimer             = gl_Index_Last_Method + 11;
+constexpr unsigned short gl_Index_Method_EndTimer               = gl_Index_Last_Method + 12;
 
 class BaseFunction final : public IBaseExtensionClass
 {
@@ -33,6 +33,7 @@ public:
 
 	// Переопределяемые методы
 	const wchar_t* getNameExtension() override; // Должен возвращать фактическое наименование расширения
+	const wchar_t* getVersion() override; // Должен возвращать номер версии компоненты
 	void setMethodPropsExtension() override; // Инициализация компоненты (дополнение методов и свойств компоненты)
 	void getPropByIndex(unsigned short, tVariant*) override; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
 	void setPropByIndex(unsigned short, tVariant*) override; // Должен установить значение параметра по индексу в tVariant

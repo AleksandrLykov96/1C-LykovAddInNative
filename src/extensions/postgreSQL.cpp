@@ -6,6 +6,10 @@ const wchar_t* PostgreSQL::getNameExtension() {
 	return L"PostgreSQL";
 }
 
+const wchar_t* PostgreSQL::getVersion() {
+	return L"1.0.0.16";
+}
+
 void PostgreSQL::setMethodPropsExtension() {
 	// Свойства
 	m_PropNames[gl_Index_Prop_Connection_Established]      = NamesFor1C(L"СоединениеУстановлено", L"ConnectionEstablished");
@@ -295,19 +299,56 @@ void PostgreSQL::connectToDb(const tVariant* paParams) {
 	m_NonTransaction = new pqxx::nontransaction(*m_Conn);
 
 	const auto res = m_NonTransaction->exec(
-		"SELECT oid, "
+		"SELECT oid,\n"
 		"	typcategory = 'B' AS itsBoolean,\n"
-		"	typlen = 2 OR typlen = 4 AS itsInt\n"
+		"	typlen AS typLen,\n"
+		"	typname AS typname\n"
 		"FROM pg_type\n"
 		"WHERE typcategory IN('B', 'N')\n");
 
 	for (const auto& row : res) {
-		if (row["itsBoolean"].as<bool>())
-			m_ColumnsTypes[row["oid"].as<pqxx::oid>()] = gl_Type_Column_Boolean;
-		else if (row["itsInt"].as<bool>())
-			m_ColumnsTypes[row["oid"].as<pqxx::oid>()] = gl_Type_Column_Int;
-		else
-			m_ColumnsTypes[row["oid"].as<pqxx::oid>()] = gl_Type_Column_Double;
+		const auto oid = row["oid"].as<pqxx::oid>();
+		if (row["itsBoolean"].as<bool>()) {
+			m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Boolean;
+			continue;
+		}
+
+		const auto nameType = pqxx::to_string(row["typname"]);
+		if (gl_IEqualsCaseInsensitive(nameType.c_str(), "oid")) {
+			m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_OID;
+			continue;
+		}
+
+		const auto typLen = row["typlen"].as<int>();
+		if (boost::algorithm::starts_with(nameType, "int") || boost::algorithm::starts_with(nameType, "_int")) {
+			switch (typLen) {
+				case 2:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Int16;
+					break;
+				case 4:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Int32;
+					break;
+				case 8:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Int64;
+					break;
+				default:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_LongDouble;
+					break;
+			}
+		} else {
+			switch (typLen) {
+				case 2:
+				case 4:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Float;
+					break;
+				case 8:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_Double;
+					break;
+				default:
+					m_ColumnsTypes[oid] = gl_Type_Column_PostgreSQL_LongDouble;
+					break;
+			}
+		}
 	}
 
 	m_ConnectionLine = gl_CopyStringToChar(lineConnect);
@@ -1065,21 +1106,38 @@ void PostgreSQL::arrayResultToJson_WriteRow(const pqxx::row& row, const std::uno
 		}
 
 		switch (tmp.find(name)->second) {
-			case gl_Type_Column_Int: {
-				writer.Int(field.as<int>());
+			case gl_Type_Column_PostgreSQL_OID:
+				writer.Uint(field.as<pqxx::oid>());
 				continue;
-			}
-			case gl_Type_Column_Boolean: {
-				writer.Bool(field.as<bool>());
+			case gl_Type_Column_PostgreSQL_Int16:
+				writer.Int(field.as<int16_t>());
 				continue;
-			}
-			case gl_Type_Column_Double: {
+			case gl_Type_Column_PostgreSQL_Int32:
+				writer.Int(field.as<int32_t>());
+				continue;
+			case gl_Type_Column_PostgreSQL_Int64:
+				writer.Int64(field.as<int64_t>());
+				continue;
+			case gl_Type_Column_PostgreSQL_Float:
+				writer.Double(field.as<float>());
+				continue;
+			case gl_Type_Column_PostgreSQL_Double:
 				writer.Double(field.as<double>());
 				continue;
-			}
+			case gl_Type_Column_PostgreSQL_LongDouble:
+				writer.Double(field.as<long double>());
+				continue;
+			case gl_Type_Column_PostgreSQL_Boolean:
+				writer.Bool(field.as<bool>());
+				continue;
 			default: {
-				const auto str = pqxx::to_string(field);
-				writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.length()));
+				if (!field.is_null()) {
+					const auto str = pqxx::to_string(field);
+					writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.length()));
+				} else
+					writer.Null();
+
+				continue;
 			}
 		}
 	}

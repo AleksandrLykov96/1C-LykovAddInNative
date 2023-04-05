@@ -6,6 +6,10 @@ const wchar_t* BaseFunction::getNameExtension() {
 	return L"BaseFunction";
 }
 
+const wchar_t* BaseFunction::getVersion() {
+	return L"1.0.0.16";
+}
+
 void BaseFunction::setMethodPropsExtension() {
 	m_MethodNames[gl_Index_Method_Pause]                  = NamesFor1C(L"Пауза", L"Pause");
 	m_MethodNames[gl_Index_Method_String_To_Number]       = NamesFor1C(L"СтрокаВЧисло", L"StringToNumber");

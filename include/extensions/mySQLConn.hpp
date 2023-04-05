@@ -11,10 +11,10 @@ constexpr unsigned short gl_Type_Column_MySQL_Long   = 1;
 constexpr unsigned short gl_Type_Column_MySQL_Double = 2;
 constexpr unsigned short gl_Type_Column_MySQL_String = 3;
 
-constexpr unsigned short gl_Index_Prop_MySQL_Connection_Info = 5;
+constexpr unsigned short gl_Index_Prop_MySQL_Connection_Info = gl_Index_Last_Prop + 1;
 
-constexpr unsigned short gl_Index_Method_MySQL_Connect_Db = 0;
-constexpr unsigned short gl_Index_Method_MySQL_Exec       = 1;
+constexpr unsigned short gl_Index_Method_MySQL_Connect_Db = gl_Index_Last_Method + 1;
+constexpr unsigned short gl_Index_Method_MySQL_Exec       = gl_Index_Last_Method + 2;
 
 class MySqlConn final : public IBaseExtensionClass {
 public:
@@ -23,6 +23,7 @@ public:
 
 	// Переопределяемые методы
 	const wchar_t* getNameExtension() override; // Должен возвращать фактическое наименование расширения
+	const wchar_t* getVersion() override; // Должен возвращать номер версии компоненты
 	void setMethodPropsExtension() override; // Инициализация компоненты (дополнение методов и свойств компоненты)
 	void getPropByIndex(unsigned short, tVariant*) override; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
 	void setPropByIndex(unsigned short, tVariant*) override; // Должен установить значение параметра по индексу в tVariant

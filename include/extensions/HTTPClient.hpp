@@ -7,19 +7,19 @@
 #include <list>
 #include <curl/curl.h>
 
-constexpr unsigned short gl_Index_Prop_Max_Connects          = 5;
-constexpr unsigned short gl_Index_Prop_Max_Concurrent_Stream = 6;
-constexpr unsigned short gl_Index_Prop_Max_Host_Connection   = 7;
-constexpr unsigned short gl_Index_Prop_Max_Total_Connection  = 8;
-constexpr unsigned short gl_Index_Prop_Enable_Debug          = 9;
-constexpr unsigned short gl_Index_Prop_Enable_Headers        = 10;
-constexpr unsigned short gl_Index_Prop_Enable_Cookies        = 11;
-constexpr unsigned short gl_Index_Prop_TimeoutMultiWait      = 12;
+constexpr unsigned short gl_Index_Prop_Max_Connects          = gl_Index_Last_Prop + 1;
+constexpr unsigned short gl_Index_Prop_Max_Concurrent_Stream = gl_Index_Last_Prop + 2;
+constexpr unsigned short gl_Index_Prop_Max_Host_Connection   = gl_Index_Last_Prop + 3;
+constexpr unsigned short gl_Index_Prop_Max_Total_Connection  = gl_Index_Last_Prop + 4;
+constexpr unsigned short gl_Index_Prop_Enable_Debug          = gl_Index_Last_Prop + 5;
+constexpr unsigned short gl_Index_Prop_Enable_Headers        = gl_Index_Last_Prop + 6;
+constexpr unsigned short gl_Index_Prop_Enable_Cookies        = gl_Index_Last_Prop + 7;
+constexpr unsigned short gl_Index_Prop_TimeoutMultiWait      = gl_Index_Last_Prop + 8;
 
-constexpr unsigned short gl_Index_Method_Send_Requests_Async             = 0;
-constexpr unsigned short gl_Index_Method_Send_Requests_Sync              = 1;
-constexpr unsigned short gl_Index_Method_Register_Requests_For_Execution = 2;
-constexpr unsigned short gl_Index_Method_Get_Results_Registered_Requests = 3;
+constexpr unsigned short gl_Index_Method_Send_Requests_Async             = gl_Index_Last_Method + 1;
+constexpr unsigned short gl_Index_Method_Send_Requests_Sync              = gl_Index_Last_Method + 2;
+constexpr unsigned short gl_Index_Method_Register_Requests_For_Execution = gl_Index_Last_Method + 3;
+constexpr unsigned short gl_Index_Method_Get_Results_Registered_Requests = gl_Index_Last_Method + 4;
 
 constexpr unsigned int gl_Limit_Multi_Iterations = 65536;
 constexpr curl_off_t gl_Limit_Large_Body = 2147483648;
@@ -64,6 +64,7 @@ public:
 
 	// Переопределяемые методы
 	const wchar_t* getNameExtension() override; // Должен возвращать фактическое наименование расширения
+	const wchar_t* getVersion() override; // Должен возвращать номер версии компоненты
 	void setMethodPropsExtension() override; // Инициализация компоненты (дополнение методов и свойств компоненты)
 	void getPropByIndex(unsigned short, tVariant*) override; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
 	void setPropByIndex(unsigned short, tVariant*) override; // Должен установить значение параметра по индексу в tVariant
