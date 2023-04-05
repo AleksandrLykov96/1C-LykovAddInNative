@@ -460,7 +460,9 @@ void BaseFunction::localRegexMatch(const tVariant* paParams, tVariant* pvarRetVa
 	const auto strRegex = getInputParam<std::wstring>(paParams, 1);
 
 	static const std::wregex regex(strRegex);
-	setReturnedParam<bool>(std::regex_match(strForMatch, regex), pvarRetValue);
+	
+	const auto res = std::regex_match(strForMatch, regex);
+	setReturnedParam<bool>(res, pvarRetValue);
 }
 
 #pragma endregion

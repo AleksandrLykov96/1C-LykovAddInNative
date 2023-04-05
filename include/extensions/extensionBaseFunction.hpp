@@ -20,12 +20,12 @@ constexpr unsigned short gl_Index_Method_Clear_String_Json      = gl_Index_Last_
 constexpr unsigned short gl_Index_Method_Compress               = gl_Index_Last_Method + 5;
 constexpr unsigned short gl_Index_Method_Decompress             = gl_Index_Last_Method + 6;
 constexpr unsigned short gl_Index_Method_Current_Unix_Timestamp = gl_Index_Last_Method + 7;
-constexpr unsigned short gl_Index_Method_Get_Screenshot         = gl_Index_Last_Method + 8;
-constexpr unsigned short gl_Index_Method_Interrupt_Handler      = gl_Index_Last_Method + 9;
-constexpr unsigned short gl_Index_Method_UUID                   = gl_Index_Last_Method + 10;
-constexpr unsigned short gl_Index_Method_StartTimer             = gl_Index_Last_Method + 11;
-constexpr unsigned short gl_Index_Method_EndTimer               = gl_Index_Last_Method + 12;
-constexpr unsigned short gl_Index_Method_Regex_Match            = gl_Index_Last_Method + 13;
+constexpr unsigned short gl_Index_Method_UUID                   = gl_Index_Last_Method + 8;
+constexpr unsigned short gl_Index_Method_StartTimer             = gl_Index_Last_Method + 9;
+constexpr unsigned short gl_Index_Method_EndTimer               = gl_Index_Last_Method + 10;
+constexpr unsigned short gl_Index_Method_Regex_Match            = gl_Index_Last_Method + 11;
+constexpr unsigned short gl_Index_Method_Get_Screenshot         = gl_Index_Last_Method + 12; // Обязательно в конце (так как на *nix не компилируем)
+constexpr unsigned short gl_Index_Method_Interrupt_Handler      = gl_Index_Last_Method + 13; // Обязательно в конце (так как на *nix не компилируем)
 
 class BaseFunction final : public IBaseExtensionClass {
 public:
