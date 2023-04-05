@@ -21,6 +21,7 @@ void BaseFunction::setMethodPropsExtension() {
 	m_MethodNames[gl_Index_Method_UUID]                   = NamesFor1C(L"УникальныйИдентификатор", L"UUID");
 	m_MethodNames[gl_Index_Method_StartTimer]             = NamesFor1C(L"НачатьЗамер", L"StartTimer");
 	m_MethodNames[gl_Index_Method_EndTimer]               = NamesFor1C(L"ЗавершитьЗамер", L"EndTimer");
+	m_MethodNames[gl_Index_Method_Regex_Match]            = NamesFor1C(L"СтрокаСоответствуетРегулярномуВыражению", L"RegexMatch");
 
 #ifndef __linux__
 	if (!m_ItsServer) {
@@ -52,6 +53,7 @@ long BaseFunction::getMethodNParams(const unsigned short indexMethod) {
 			return 1l;
 		case gl_Index_Method_Clear_String:
 		case gl_Index_Method_Decompress:
+		case gl_Index_Method_Regex_Match:
 			return 2l;
 		case gl_Index_Method_Compress:
 			return 4l;
@@ -142,6 +144,7 @@ bool BaseFunction::getHasRetVal(const unsigned short indexMethod) {
 		case gl_Index_Method_Interrupt_Handler:
 		case gl_Index_Method_UUID:
 		case gl_Index_Method_EndTimer:
+		case gl_Index_Method_Regex_Match:
 			return true;
 		default:
 			return false;
@@ -192,6 +195,9 @@ void BaseFunction::callMethodAsFunc(const unsigned short indexMethod, tVariant* 
 			return;
 		case gl_Index_Method_EndTimer:
 			endTimer(paParams, pvarRetValue);
+			return;
+		case gl_Index_Method_Regex_Match:
+			localRegexMatch(paParams, pvarRetValue);
 			return;
 		default:
 			break;
@@ -447,6 +453,14 @@ void BaseFunction::endTimer(const tVariant* paParams, tVariant* pvarRetValue) co
 			pvarRetValue);
 	else
 		setReturnedParam(0, pvarRetValue);
+}
+
+void BaseFunction::localRegexMatch(const tVariant* paParams, tVariant* pvarRetValue) const {
+	const auto strForMatch = getInputParam<std::wstring>(paParams, 0);
+	const auto strRegex = getInputParam<std::wstring>(paParams, 1);
+
+	static const std::wregex regex(strRegex);
+	setReturnedParam<bool>(std::regex_match(strForMatch, regex), pvarRetValue);
 }
 
 #pragma endregion

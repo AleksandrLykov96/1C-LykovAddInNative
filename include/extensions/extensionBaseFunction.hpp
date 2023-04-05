@@ -6,6 +6,7 @@
 #include <zlib-ng.h>
 #include <chrono>
 #include <cwctype>
+#include <regex>
 
 #ifndef __linux__
 	#include <atlimage.h>
@@ -24,9 +25,9 @@ constexpr unsigned short gl_Index_Method_Interrupt_Handler      = gl_Index_Last_
 constexpr unsigned short gl_Index_Method_UUID                   = gl_Index_Last_Method + 10;
 constexpr unsigned short gl_Index_Method_StartTimer             = gl_Index_Last_Method + 11;
 constexpr unsigned short gl_Index_Method_EndTimer               = gl_Index_Last_Method + 12;
+constexpr unsigned short gl_Index_Method_Regex_Match            = gl_Index_Last_Method + 13;
 
-class BaseFunction final : public IBaseExtensionClass
-{
+class BaseFunction final : public IBaseExtensionClass {
 public:
 	BaseFunction();
 	~BaseFunction() override = default;
@@ -61,6 +62,7 @@ private:
 	void getUuid(tVariant*) const; // Уникальный идентификатор
 	void startTimer(const tVariant*); // Начать замер
 	void endTimer(const tVariant*, tVariant*) const; // Завершить замер
+	void localRegexMatch(const tVariant*, tVariant*) const; // Строка соответствует Regex шаблону
 
 	// Вспомогательные методы
 	static void jsonRecursiveCorrectKey(rapidjson::Document&, const std::wstring&, const std::wstring&, const std::wstring&);
