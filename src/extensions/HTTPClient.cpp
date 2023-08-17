@@ -7,7 +7,7 @@ const wchar_t* HttpClient::getNameExtension() {
 }
 
 const wchar_t* HttpClient::getVersion() {
-	return L"1.0.0.16";
+	return L"1.0.0.17";
 }
 
 void HttpClient::setMethodPropsExtension() {

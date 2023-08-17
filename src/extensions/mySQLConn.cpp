@@ -7,7 +7,7 @@ const wchar_t* MySqlConn::getNameExtension() {
 }
 
 const wchar_t* MySqlConn::getVersion() {
-	return L"1.0.0.16";
+	return L"1.0.0.17";
 }
 
 void MySqlConn::setMethodPropsExtension() {
