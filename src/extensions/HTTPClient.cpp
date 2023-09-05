@@ -495,16 +495,6 @@ void HttpClient::setAllEasyParameters() {
 				currentIndex++;
 				break;
 			}
-			case CURLOPT_HTTPAUTH: {
-				m_CurrentEasyParams[currentIndex] = new EasyParamStruct(opt->id, opt->name, CURLOT_LONG, true);
-				m_CurrentEasyParams[currentIndex]->value = static_cast<long>(CURLAUTH_BASIC);
-
-				m_PropNames[currentIndex] = NamesFor1C(m_CurrentEasyParams[currentIndex]->name, m_CurrentEasyParams[currentIndex]->name);
-				m_ParametersForEasy.insert(currentIndex);
-
-				currentIndex++;
-				break;
-			}
 			// Остальные по умолчанию отключаем
 			default: {
 				switch (opt->type) {
@@ -631,6 +621,8 @@ HttpClient::RequestsStruct* HttpClient::createRequest(const rapidjson::Value::Ob
 				createEasyCurl_SetParam(curl, size > gl_Limit_Large_Body ? CURLOPT_INFILESIZE_LARGE : CURLOPT_INFILESIZE,
 										size, L"CURLOPT_INFILESIZE", requestResult);
 		}
+
+		createEasyCurl_SetParam(curl, CURLOPT_POSTFIELDS, body, L"CURLOPT_POSTFIELDS", requestResult);
 	}
 
 	// Заголовки
