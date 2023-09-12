@@ -593,36 +593,25 @@ HttpClient::RequestsStruct* HttpClient::createRequest(const rapidjson::Value::Ob
 	const auto requestResult = new RequestsStruct(curl, id, url, type, fileName, fileResultName, m_EnableDebug);
 
 	// Тело запроса
-	createEasyCurl_SetParam(curl, CURLOPT_WRITEFUNCTION, &gl_WriteCallback_Body, L"CURLOPT_WRITEFUNCTION"
-	                        , requestResult);
-	createEasyCurl_SetParam(curl, CURLOPT_WRITEDATA, static_cast<void*>(requestResult), L"CURLOPT_WRITEDATA"
-	                        , requestResult);
+	createEasyCurl_SetParam(curl, CURLOPT_WRITEFUNCTION, &gl_WriteCallback_Body, L"CURLOPT_WRITEFUNCTION", requestResult);
+	createEasyCurl_SetParam(curl, CURLOPT_WRITEDATA, static_cast<void*>(requestResult), L"CURLOPT_WRITEDATA", requestResult);
 
 	if (requestResult->fromFile) {
 		createEasyCurl_SetParam(curl, CURLOPT_READFUNCTION, &gl_ReadCallback, L"CURLOPT_READFUNCTION", requestResult);
-		createEasyCurl_SetParam(curl, CURLOPT_READDATA, static_cast<void*>(requestResult), L"CURLOPT_READDATA"
-		                        , requestResult);
-
-		if (itsPost)
-			createEasyCurl_SetParam(
-				curl, requestResult->fromFileSize > gl_Limit_Large_Body ? CURLOPT_POSTFIELDSIZE_LARGE : CURLOPT_POSTFIELDSIZE,
-				requestResult->fromFileSize, L"CURLOPT_POSTFIELDSIZE", requestResult);
-		else
-			createEasyCurl_SetParam(
-				curl, requestResult->fromFileSize > gl_Limit_Large_Body ? CURLOPT_INFILESIZE_LARGE : CURLOPT_INFILESIZE,
-				requestResult->fromFileSize, L"CURLOPT_INFILESIZE", requestResult);
-	}
-	else {
-		if (const auto size = strlen(body); size > 0) {
-			if (itsPost)
-				createEasyCurl_SetParam(curl, size > gl_Limit_Large_Body ? CURLOPT_POSTFIELDSIZE_LARGE : CURLOPT_POSTFIELDSIZE,
-										size, L"CURLOPT_POSTFIELDSIZE", requestResult);
-			else
-				createEasyCurl_SetParam(curl, size > gl_Limit_Large_Body ? CURLOPT_INFILESIZE_LARGE : CURLOPT_INFILESIZE,
-										size, L"CURLOPT_INFILESIZE", requestResult);
-		}
-
+		createEasyCurl_SetParam(curl, CURLOPT_READDATA, static_cast<void*>(requestResult), L"CURLOPT_READDATA", requestResult);
+		createEasyCurl_SetParam(curl, CURLOPT_UPLOAD, 1l, L"CURLOPT_UPLOAD", requestResult);
+		createEasyCurl_SetParam(curl,
+			requestResult->fromFileSize > gl_Limit_Large_Body ? CURLOPT_INFILESIZE_LARGE : CURLOPT_INFILESIZE,
+			requestResult->fromFileSize,
+			L"CURLOPT_INFILESIZE",
+			requestResult);
+	} else if (const auto size = strlen(body); size > 0) {
 		createEasyCurl_SetParam(curl, CURLOPT_POSTFIELDS, body, L"CURLOPT_POSTFIELDS", requestResult);
+		createEasyCurl_SetParam(curl,
+			size > gl_Limit_Large_Body ? CURLOPT_POSTFIELDSIZE_LARGE : CURLOPT_POSTFIELDSIZE,
+			size,
+			L"CURLOPT_POSTFIELDSIZE",
+			requestResult);
 	}
 
 	// Заголовки
@@ -655,11 +644,9 @@ HttpClient::RequestsStruct* HttpClient::createRequest(const rapidjson::Value::Ob
 	else if (gl_IEqualsCaseInsensitive(type, "GET"))
 		createEasyCurl_SetParam(curl, CURLOPT_HTTPGET, 1l, L"CURLOPT_HTTPGET", requestResult);
 	else if (gl_IEqualsCaseInsensitive(type, "PUT")) {
-		createEasyCurl_SetParam(curl, CURLOPT_PUT, 1l, L"CURLOPT_HTTPGET", requestResult);
-		createEasyCurl_SetParam(curl, CURLOPT_UPLOAD, 1l, L"CURLOPT_UPLOAD", requestResult);
+		createEasyCurl_SetParam(curl, CURLOPT_PUT, 1l, L"CURLOPT_PUT", requestResult);
 	} else if (strlen(type) > 0) {
 		createEasyCurl_SetParam(curl, CURLOPT_CUSTOMREQUEST, type, L"CURLOPT_CUSTOMREQUEST", requestResult);
-		createEasyCurl_SetParam(curl, CURLOPT_UPLOAD, 1l, L"CURLOPT_UPLOAD", requestResult);
 	}
 
 	if (m_EnableDebug) {

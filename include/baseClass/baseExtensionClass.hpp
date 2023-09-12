@@ -16,7 +16,8 @@ constexpr unsigned short gl_Index_Prop_Event_Buffer    = 1;
 constexpr unsigned short gl_Index_Prop_Attach_Isolated = 2;
 constexpr unsigned short gl_Index_Prop_App_Version     = 3;
 constexpr unsigned short gl_Index_Prop_App_Type        = 4;
-constexpr unsigned short gl_Index_Last_Prop            = 5; // Номер версии
+constexpr unsigned short gl_Index_Prop_Silent_Mode     = 5;
+constexpr unsigned short gl_Index_Last_Prop            = 6; // Номер версии
 
 constexpr short gl_Index_Last_Method = -1;
 
@@ -85,6 +86,7 @@ protected:
 	bool m_ItsServer = false; // Флаг того, что компоненты подключена на сервере
 	const wchar_t* m_LastError = L""; // Текст последней ошибки
 	bool itsIsolate = false; // Флаг того, что подключение изолировано
+	bool silentMode = false; // Флаг того, что не нужно выводить модальные окна сообщений при ошибках
 
 	NamesType m_PropNames; // Имена свойств для 1С
 	NamesType m_MethodNames; // Имена методов для 1С 
@@ -110,6 +112,7 @@ protected:
 	// Получить входящий параметр
 	template <typename Type>
 	Type getInputParam(const tVariant*, long = 0l) const;
+	template <> bool getInputParam(const tVariant*, long) const;
 	template <> std::wstring getInputParam(const tVariant*, long) const;
 	template <> const wchar_t* getInputParam(const tVariant*, long) const;
 	template <> std::string getInputParam(const tVariant*, long) const;

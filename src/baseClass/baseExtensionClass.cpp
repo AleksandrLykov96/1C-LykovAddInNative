@@ -29,6 +29,7 @@ bool IBaseExtensionClass::Init(void* pConnection) {
 	m_PropNames[gl_Index_Prop_Attach_Isolated] = NamesFor1C(L"ПодключениеИзолированно", L"AttachIsolated");
 	m_PropNames[gl_Index_Prop_App_Version]     = NamesFor1C(L"ВерсияПриложения", L"AppVersion");
 	m_PropNames[gl_Index_Prop_App_Type]        = NamesFor1C(L"ТипПриложения", L"AppType");
+	m_PropNames[gl_Index_Prop_Silent_Mode]     = NamesFor1C(L"ТихийРежим", L"SilentMode");
 	m_PropNames[gl_Index_Last_Prop]            = NamesFor1C(L"ВерсияКомпоненты", L"Version");
 
 	setMethodPropsExtension();
@@ -146,6 +147,9 @@ bool IBaseExtensionClass::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 
 			return true;
 		}
+		case gl_Index_Prop_Silent_Mode:
+			setReturnedParam(silentMode, pvarPropVal);
+			return true;
 		case gl_Index_Last_Prop:
 			setReturnedParam(getVersion(), pvarPropVal);
 			return true;
@@ -175,12 +179,17 @@ bool IBaseExtensionClass::SetPropVal(const long lPropNum, tVariant* varPropVal) 
 	m_LastError = L"";
 	const auto num = static_cast<unsigned short>(lPropNum);
 	try {
-		if (num == gl_Index_Prop_Event_Buffer)
-			m_IConnect->SetEventBufferDepth(getInputParam<unsigned int>(varPropVal, -1));
-		else
-			setPropByIndex(num, varPropVal);
-
-		return true;
+		switch (num) {
+			case gl_Index_Prop_Event_Buffer:
+				m_IConnect->SetEventBufferDepth(getInputParam<unsigned int>(varPropVal, -1));
+				return true;
+			case gl_Index_Prop_Silent_Mode:
+				silentMode = getInputParam<bool>(varPropVal, -1);
+				return true;
+			default:
+				setPropByIndex(num, varPropVal);
+				return true;
+		}
 	} catch (const LykovException& message) {
 		addError(message);
 	} catch (const std::runtime_error& message) {
@@ -309,7 +318,7 @@ void IBaseExtensionClass::SetUserInterfaceLanguageCode(const WCHAR_T* loc) {
 #pragma region ИнтерфейсПредприятия
 
 void IBaseExtensionClass::addError(const LykovException& exp) {
-	if (!m_ItsServer && m_IConnect) {
+	if (!silentMode && !m_ItsServer && m_IConnect) {
 #ifdef __linux__
 		const auto err = gl_ConvToShortWchar(nullptr, exp.getSource());
 		const auto descr = gl_ConvToShortWchar(nullptr, exp.getDescription());
@@ -428,7 +437,7 @@ IInterface* IBaseExtensionClass::getInterface(const Interfaces iface) const {
 
 bool IBaseExtensionClass::showQuestions(const wchar_t* message, tVariant* pVal) const {
 	// Только на клиенте
-	if (m_ItsServer || !m_IConnect)
+	if (silentMode || m_ItsServer || !m_IConnect)
 		return false;
 
 	const auto imsgbox = static_cast<IMsgBox*>(getInterface(eIMsgBox)); // Оставить static_cast!!!
@@ -448,7 +457,7 @@ bool IBaseExtensionClass::showQuestions(const wchar_t* message, tVariant* pVal) 
 
 bool IBaseExtensionClass::showMessage(const wchar_t* message) const {
 	// Только на клиенте
-	if (m_ItsServer || !m_IConnect)
+	if (silentMode || m_ItsServer || !m_IConnect)
 		return false;
 
 	const auto imsgbox = static_cast<IMsgBox*>(getInterface(eIMsgBox));
