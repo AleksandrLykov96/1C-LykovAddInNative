@@ -217,6 +217,7 @@ bool IBaseExtensionClass::IsPropWritable(const long lPropNum) {
 		case gl_Index_Prop_App_Version:
 		case gl_Index_Prop_App_Type:
 			return false;
+		case gl_Index_Prop_Silent_Mode:
 		case gl_Index_Prop_Event_Buffer:
 			return !m_ItsServer;
 		default:
