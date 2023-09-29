@@ -7,7 +7,7 @@ const wchar_t* BaseFunction::getNameExtension() {
 }
 
 const wchar_t* BaseFunction::getVersion() {
-	return L"1.0.0.17";
+	return L"1.0.0.18";
 }
 
 void BaseFunction::setMethodPropsExtension() {

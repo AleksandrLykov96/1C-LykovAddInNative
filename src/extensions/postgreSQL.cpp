@@ -7,7 +7,7 @@ const wchar_t* PostgreSQL::getNameExtension() {
 }
 
 const wchar_t* PostgreSQL::getVersion() {
-	return L"1.0.0.17";
+	return L"1.0.0.18";
 }
 
 void PostgreSQL::setMethodPropsExtension() {
