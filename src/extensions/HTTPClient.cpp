@@ -684,7 +684,7 @@ void HttpClient::writeResultToJson(const CURLcode codeResult, RequestsStruct* re
 	writer.Key("ВремяОтвета", static_cast<rapidjson::SizeType>(22));
 	writer.Double(total);
 
-	writer.Key("UnixTimestampОтвета", static_cast<rapidjson::SizeType>(38));
+	writer.Key("UnixTimestampОтвета", static_cast<rapidjson::SizeType>(25));
 	writer.Double(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000.);
 
 	writer.Key("Успешно", static_cast<rapidjson::SizeType>(14));
