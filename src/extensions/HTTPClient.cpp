@@ -663,6 +663,9 @@ template <typename type>
 void HttpClient::writeResultToJson(const CURLcode codeResult, RequestsStruct* request, rapidjson::Writer<type>& writer) {
 	writer.StartObject();
 
+	writer.Key("UnixTimestampОтвета", static_cast<rapidjson::SizeType>(25));
+	writer.Double(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000.);
+
 	writer.Key("ИдентификаторЗапроса", static_cast<rapidjson::SizeType>(40));
 	writer.String(request->id, static_cast<rapidjson::SizeType>(strlen(request->id)));
 
@@ -683,9 +686,6 @@ void HttpClient::writeResultToJson(const CURLcode codeResult, RequestsStruct* re
 
 	writer.Key("ВремяОтвета", static_cast<rapidjson::SizeType>(22));
 	writer.Double(total);
-
-	writer.Key("UnixTimestampОтвета", static_cast<rapidjson::SizeType>(25));
-	writer.Double(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000.);
 
 	writer.Key("Успешно", static_cast<rapidjson::SizeType>(14));
 	writer.Bool(code >= 200 && code < 300);
