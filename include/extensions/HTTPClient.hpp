@@ -1,136 +1,116 @@
-﻿#ifndef __HTTP_CLIENT_HPP__
+
+#ifndef __HTTP_CLIENT_HPP__
 #define __HTTP_CLIENT_HPP__
 
-#include <baseClass/baseExtensionClass.hpp>
+#include "baseClass/baseClassForExtension.hpp"
+#include "baseClass/encrypt.hpp"
 
-#include <set>
-#include <list>
+#include <ranges>
+#include <shared_mutex>
+
 #include <curl/curl.h>
+#include <magic_enum/magic_enum_all.hpp>
 
-constexpr unsigned short gl_Index_Prop_Max_Connects          = gl_Index_Last_Prop + 1;
-constexpr unsigned short gl_Index_Prop_Max_Concurrent_Stream = gl_Index_Last_Prop + 2;
-constexpr unsigned short gl_Index_Prop_Max_Host_Connection   = gl_Index_Last_Prop + 3;
-constexpr unsigned short gl_Index_Prop_Max_Total_Connection  = gl_Index_Last_Prop + 4;
-constexpr unsigned short gl_Index_Prop_Enable_Debug          = gl_Index_Last_Prop + 5;
-constexpr unsigned short gl_Index_Prop_Enable_Headers        = gl_Index_Last_Prop + 6;
-constexpr unsigned short gl_Index_Prop_Enable_Cookies        = gl_Index_Last_Prop + 7;
-constexpr unsigned short gl_Index_Prop_TimeoutMultiWait      = gl_Index_Last_Prop + 8;
+constexpr curl_off_t limit_large_body = 2147483648L;
+typedef std::variant<std::wstring, long, std::monostate> curl_all_types;
 
-constexpr unsigned short gl_Index_Method_Send_Requests_Async             = gl_Index_Last_Method + 1;
-constexpr unsigned short gl_Index_Method_Send_Requests_Sync              = gl_Index_Last_Method + 2;
-constexpr unsigned short gl_Index_Method_Register_Requests_For_Execution = gl_Index_Last_Method + 3;
-constexpr unsigned short gl_Index_Method_Get_Results_Registered_Requests = gl_Index_Last_Method + 4;
-
-constexpr unsigned int gl_Limit_Multi_Iterations = 65536;
-constexpr curl_off_t gl_Limit_Large_Body = 2147483648;
-
-class HttpClient final : public IBaseExtensionClass {
-	std::mutex m_Mutex;
-
+class CurlRequestInfo final {
 public:
-	struct RequestsStruct {
-		CURL* eh; // Запрос
-		const char* id; // Идентификатор запроса
-		const char* url; // URL запроса
-		const char* type; // Метод запроса
+	CurlRequestInfo(const native1C::json_value&, bool, bool);
+	~CurlRequestInfo();
+	BOOST_DELETED_FUNCTION(CurlRequestInfo(CurlRequestInfo&&) BOOST_NOEXCEPT)
+	BOOST_DELETED_FUNCTION(CurlRequestInfo(const CurlRequestInfo&))
+	BOOST_DELETED_FUNCTION(CurlRequestInfo& operator=(const CurlRequestInfo&))
+	BOOST_DELETED_FUNCTION(CurlRequestInfo& operator=(CurlRequestInfo&&))
 
-		bool fromFile = false;
-		curl_off_t fromFileSize = 0;
-		std::ifstream streamIf; // Файл тела запроса
+	CURL* eh;
+	std::wstring id; // ID запроса
 
-		bool toFile = false;
-		std::ofstream streamOf; // Файл результат
-		std::string bodyResult = ""; // Тело результат
+	size_t writeResult(const char*, size_t size);
+	size_t writeHeaders(const char*, size_t size);
+	int writeDebugInfo(curl_infotype, const char*, size_t);
+	size_t readDataFromFile(char*, size_t size);
 
-		rapidjson::SizeType bodyResultSize = 0;
+	native1C::json_value createResultJSON(CURLcode, rapidjson::MemoryPoolAllocator<>&);
 
-		const char* fileNameResult = "";
-		rapidjson::SizeType fileNameResultSize = 0;
-
-		std::unordered_map<std::string, std::string> headersResult; // Заголовки ответа
-
-		// debug
-		bool itsDebug = false;
-		
-		std::string debugInfo_Text = "", debugInfo_HeaderIn = "", debugInfo_HeaderOut = "", debugInfo_DataIn = "", debugInfo_DataOut = "", debugInfo_SSLDataIn = "", debugInfo_SSLDataOut = ""; // Debug информация
-		rapidjson::SizeType debugInfo_TextSize = 0, debugInfo_HeaderInSize = 0, debugInfo_HeaderOutSize = 0, debugInfo_DataInSize = 0, debugInfo_DataOutSize = 0, debugInfo_SSLDataInSize = 0, debugInfo_SSLDataOutSize = 0;
-
-		RequestsStruct(CURL*, const char*, const char*, const char*, const char*, const char*, bool);
-		~RequestsStruct();
-	};
-
-	HttpClient();
-	~HttpClient() override;
-
-	// Переопределяемые методы
-	const wchar_t* getNameExtension() override; // Должен возвращать фактическое наименование расширения
-	const wchar_t* getVersion() override; // Должен возвращать номер версии компоненты
-	void setMethodPropsExtension() override; // Инициализация компоненты (дополнение методов и свойств компоненты)
-	void getPropByIndex(unsigned short, tVariant*) override; // Должен положить значение параметра по индексу в tVariant или вызвать исключение (например, если свойство не найдено)
-	void setPropByIndex(unsigned short, tVariant*) override; // Должен установить значение параметра по индексу в tVariant
-	bool getIsPropWritable(unsigned short) override; // Должен вернуть доступность записи параметра по индексу
-	long getMethodNParams(unsigned short) override; // Должен вернуть количество параметров метода
-	void setParamDefValue(unsigned short, long, tVariant*) override; // Должен установить значения параметров по умолчанию
-	bool getHasRetVal(unsigned short) override; // Должен вернуть признак наличия возвращаемого значения
-	void callMethodAsProc(unsigned short, const tVariant*, long) override; // Вызвать нужную процедуру
-	void callMethodAsFunc(unsigned short, tVariant*, const tVariant*, long) override; // Вызвать нужную функцию
 
 private:
-	CURLM* m_Cm; // multi
-	CURLSH* m_Sh; // Общий ресурс
+	std::wstring url; // URL запроса
+	std::wstring type; // Метод запроса
 
-	// Работа с параметрами
-	unsigned int m_MaxConnects = 64, m_MaxConcurrentStream = 256, m_MaxHostConnection = 0, m_MaxTotalConnection = 0, m_TimeoutMultiWait = 1000;
-	bool m_EnableDebug = false, m_EnableHeaders = false, m_EnableCookies = false;
+	std::wstring inputFileName; // Имя файла тела запроса
+	std::string body; // Тело запроса
+	std::ifstream streamIf; // Файл тела запроса
+	bool fromFile = false;
 
-	struct EasyParamStruct {
-		CURLoption id;
-		const wchar_t* name;
-		curl_easytype type;
-		std::variant<std::string, long> value;
-		bool setThisValue;
+	std::wstring outputFileName; // Имя файла тела результата
+	std::string bodyResult; // Тело результат
+	std::ofstream streamOf; // Файл результат
+	bool toFile = false;
 
-		EasyParamStruct(CURLoption, const char*, curl_easytype, bool);
-		EasyParamStruct(const EasyParamStruct&);
-		~EasyParamStruct();
-	};
+	std::unordered_map<std::wstring, std::wstring> headersResult; // Заголовки ответа
 
-	std::map<unsigned short, EasyParamStruct*> m_CurrentEasyParams;
-	std::set<unsigned short> m_ParametersForEasy;
+	std::string userName; // Имя пользователя
+	std::string password; // Пароль пользователя
 
-	void setAllEasyParameters();
+	// debug
+	bool itsDebug = false;
 
-	// Работа с запросами
-	std::unordered_map<CURL*, RequestsStruct*> m_RegisteredRequests;
+	std::string debugInfo_Text;
+	std::string debugInfo_HeaderIn;
+	std::string debugInfo_HeaderOut;
+	std::string debugInfo_DataIn;
+	std::string debugInfo_DataOut;
+	std::string debugInfo_SSLDataIn;
+	std::string debugInfo_SSLDataOut;
 
-	void sendRequestsSync(const tVariant*, tVariant*);
-	void sendRequestsAsync(const tVariant*, tVariant*);
-	void registerRequestsForExecution(const tVariant*);
-	void getResultsRegisteredRequests(tVariant*);
-
-	// Вспомогательные функции
-	std::unordered_map<std::thread::id, std::thread*> m_ThreadsMap;
-
-	CURL* createEasyCurl(); // Подготовить базовый запрос по параметрам
-	RequestsStruct* createRequest(const rapidjson::Value::Object&);
-
-	template <typename type>
-	static void writeResultToJson(CURLcode, RequestsStruct*, rapidjson::Writer<type>&);
-	template <typename type>
-	type setMultiParam(CURLMoption, const wchar_t*, tVariant*);
-	template <typename type>
-	void createEasyCurl_SetParam(CURL*, CURLoption, type, const wchar_t*, RequestsStruct* = nullptr);
-
-	void sendRequestsSync_DoIt(tVariant*, const rapidjson::Document&, unsigned = 0);
-	void registerRequests(const rapidjson::Document&, CURLM*, std::unordered_map<CURL*, RequestsStruct*>&);
-	std::wstring getResultsRequests(CURLM*, std::unordered_map<CURL*, RequestsStruct*>&) const;
-	void sendRequestsSync_Thread(std::string inputString);
-	void clearAllThreads();
+	static void copyValueStringFromSrc(std::wstring&, const native1C::json_value&, const wchar_t*, const wchar_t* = L"");
 };
 
-static size_t gl_WriteCallback_Body(const char*, size_t, size_t, HttpClient::RequestsStruct*);
-static size_t gl_WriteCallback_Headers(const char*, size_t, size_t, HttpClient::RequestsStruct*);
-static size_t gl_ReadCallback(char*, size_t, size_t, HttpClient::RequestsStruct*);
-static int gl_DebugCallback(CURL*, curl_infotype, const char*, size_t, HttpClient::RequestsStruct*);
+class HttpClient final : public native1C::IBaseExtensionClass {
+public:
+	HttpClient();
+	~HttpClient() BOOST_OVERRIDE;
+	BOOST_DELETED_FUNCTION(HttpClient(HttpClient&&) BOOST_NOEXCEPT)
+	BOOST_DELETED_FUNCTION(HttpClient(const HttpClient&))
+	BOOST_DELETED_FUNCTION(HttpClient& operator=(const HttpClient&))
+	BOOST_DELETED_FUNCTION(HttpClient& operator=(HttpClient&&))
+
+
+protected:
+	virtual std::wstring getNameExtension() BOOST_OVERRIDE;
+	virtual void initializeComponent() BOOST_OVERRIDE;
+
+
+private:
+	std::mutex p_Mutex;
+	CURLM* p_Cm; // multi
+	CURLSH* p_Sh; // Общий ресурс
+	bool p_ReturnHeaders = false;
+
+	std::map<CURLoption, curl_all_types> g_SingleOptions;
+	std::map<CURLMoption, curl_all_types> p_MultiOptions;
+	std::unordered_map<CURL*, CurlRequestInfo*> p_ActiveRequests;
+	std::map<std::jthread::id, std::jthread*> p_ActiveThreads;
+
+	// Методы компоненты
+	native1C::all_returned_types sendRequestsAsync(const native1C::all_input_types&);
+	native1C::all_returned_types sendRequestsSync(const native1C::all_input_types&, const native1C::all_input_types&);
+	void registerRequestsForExecution(const native1C::all_input_types&, const native1C::all_input_types&);
+	native1C::all_returned_types getResultsRegisteredRequests();
+
+	// Вспомогательные функции
+	void setOptMulti(CURLM*);
+	void setupEasyCurl(CURL*);
+
+	bool registerRequests(const native1C::json_document&, CURLM*, std::unordered_map<CURL*, CurlRequestInfo*>&);
+	native1C::json_document getResultsRequests(CURLM*, std::unordered_map<CURL*, CurlRequestInfo*>&, bool = false);
+	native1C::json_document sendRequestSync(const native1C::json_value&);
+	void sendRequestSync(const native1C::json_value&, native1C::json_value&, rapidjson::MemoryPoolAllocator<>&);
+	void sendRequestsSync_Thread(const native1C::json_document&);
+	void initExternalEvent(const native1C::json_value&);
+
+	static void clearAllActiveRequests(std::unordered_map<CURL*, CurlRequestInfo*>&);
+};
 
 #endif

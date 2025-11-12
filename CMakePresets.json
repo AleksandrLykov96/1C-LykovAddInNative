@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 3,
   "configurePresets": [
     {
@@ -14,15 +14,17 @@
       },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
-          "value": "/home/lykov-aa/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "value": "/home/lykov/git/vcpkg/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         },
         "VCPKG_TARGET_ARCHITECTURE": "x64",
         "VCPKG_CMAKE_SYSTEM_NAME": "Linux",
-        "TypeCompile": "lin",
         "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "CMAKE_C_COMPILER": "/usr/bin/clang",
-        "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+        "VCPKG_CRT_LINKAGE": "static",
+        "VCPKG_LIBRARY_LINKAGE": "static",
+        "CMAKE_C_COMPILER": "/usr/bin/gcc",
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+        "TypeCompile": "lin"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -50,7 +52,7 @@
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_TOOLCHAIN_FILE": {
-          "value": "D:\\cpp\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         }
       },
@@ -155,6 +157,23 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "VCPKG_BUILD_TYPE": "Debug",
         "TypeCompile": "lin-deb"
+      }
+    },
+    {
+      "name": "Linux-x86",
+      "inherits": "LinBase",
+      "displayName": "Linux x86 (Release)",
+      "description": "Linux x86 (Release)",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_ARCHITECTURE": "x86",
+        "TARGET_ARCH": "x86",
+        "TypeCompile": "lin-x86"
       }
     }
   ]

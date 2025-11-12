@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    "boost-exception",
+    "boost-date-time",
+    "boost-serialization",
+    "curl",
+    "libpqxx",
+    "magic-enum",
+    "plog",
+    "rapidjson",
+    "skcrypter",
+    "stduuid",
+    "uni-algo",
+    "zlib"
+  ]
+}
