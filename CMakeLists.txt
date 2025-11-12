@@ -228,7 +228,7 @@ foreach(current_project_name ${LIST_EXTENSION_PROJECTS})
     
     if (UNIX)
         set(properties_for_nix
-            "-Wunknown-pragmas -std=c++20 -pedantic -static-libgcc -static-libstdc++ -lm -lc -ldl -lgcc -Wl,--no-as-needed -lpthread -Xlinker --version-script ${CMAKE_CURRENT_SOURCE_DIR}/version.script ")
+            "-Wunknown-pragmas -std=c++20 -pedantic -static-libgcc -static-libstdc++ -lm -lc -ldl -lgcc -Wl,--no-as-needed -lpthread -Xlinker --version-script ${CMAKE_CURRENT_SOURCE_DIR}/include/forConfigure/version.script ")
 
         if (CMAKE_BUILD_TYPE STREQUAL "Release")
             set(properties_for_nix "${properties_for_nix} -O3 -s -fPIC -Wall ")

@@ -8,11 +8,6 @@
 #include "baseClass/from1C/ComponentBase.h"
 #include "baseClass/from1C/IMemoryManager.h"
 
-#ifdef __llvm__
-	// В PLOG в макросе не стоят {}. Куча предупреждений, убираем.
-	//#pragma GCC diagnostic ignored "-Wdangling-else"
-#endif
-
 #include <algorithm>
 #include <codecvt>
 #include <execution>
@@ -144,11 +139,11 @@ namespace native1C {
 		virtual std::wstring getNameExtension() = 0; // Должен возвращать фактическое наименование расширения.
 		virtual void initializeComponent() = 0; // Вызывается при инициализации компоненты.
 
-#ifdef NDEBUG
+	#ifdef NDEBUG
 		bool debuggingMode = false; // Флаг того, что компонента подключена в режиме отладки.
-#else
+	#else
 		bool debuggingMode = true; // Флаг того, что компонента подключена в режиме отладки.
-#endif
+	#endif
 
 		bool itsServer = true; // Флаг того, что компонента подключена на сервере.
 		bool itsIsolate = false; // Флаг того, что компонента подключена в отдельном потоке.
