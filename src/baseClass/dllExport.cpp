@@ -7,6 +7,8 @@
 	#include "extensions/HTTPClient.hpp"
 #elif ENABLE_POSTGRE_SQL
 	#include "extensions/postgreSQL.hpp"
+#elif ENABLE_PDF_EDITOR
+	#include "extensions/pdfEditor.hpp"
 #endif
 
 #ifdef _WINDOWS
@@ -29,6 +31,8 @@ const WCHAR_T* GetClassNames() {
 	return GET_CLASS_NAME("HttpClient");
 #elif ENABLE_POSTGRE_SQL
 	return GET_CLASS_NAME("PostgreSQL");
+#elif ENABLE_PDF_EDITOR
+	return GET_CLASS_NAME("PdfEditor");
 #else
 	return GET_CLASS_NAME("");
 #endif
@@ -51,6 +55,9 @@ long GetClassObject(const WCHAR_T* exceptionName, IComponentBase** pIntf) {
 #elif ENABLE_POSTGRE_SQL
 	if (gl_str_iequal(exceptionName, GET_CLASS_NAME("PostgreSQL")))
 		*pIntf = new PostgreSQL();
+#elif ENABLE_PDF_EDITOR
+	if (gl_str_iequal(exceptionName, GET_CLASS_NAME("PdfEditor")))
+		*pIntf = new PDFEditor();
 #endif
 	
 	return *pIntf == nullptr ? 0 : reinterpret_cast<long>(*pIntf);

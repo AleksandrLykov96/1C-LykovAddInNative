@@ -1,7 +1,7 @@
 # CMakeList.txt: проект CMake для lykovAddInNative; включите исходный код и определения,
 # укажите здесь логику для конкретного проекта.
 #
-cmake_minimum_required (VERSION 3.26)
+cmake_minimum_required (VERSION 3.27)
 cmake_policy(SET CMP0091 NEW)
 
 project (lykovAddInNative LANGUAGES CXX DESCRIPTION "Lykov (AddInNative)")
@@ -9,9 +9,10 @@ add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 # Какие компоненты компилировать
-set(ENABLE_BASE_FUNCTION true)
-set(ENABLE_HTTP_CLIENT true)
-set(ENABLE_POSTGRE_SQL true)
+set(ENABLE_BASE_FUNCTION false)
+set(ENABLE_HTTP_CLIENT false)
+set(ENABLE_POSTGRE_SQL false)
+set(ENABLE_PDF_EDITOR true)
 
 # Базовые параметры компиляции
 set(VCPKG_LIBRARY_LINKAGE static)
@@ -127,6 +128,7 @@ if (WIN32)
     add_definitions(-DRAPIDJSON_SIMD)
     add_definitions(-DRAPIDJSON_SSE42)
     add_definitions(-DWIN32_LEAN_AND_MEAN)
+    add_definitions(-DNOMINMAX)
 endif()
 
 # Остальные
@@ -207,6 +209,18 @@ if (ENABLE_POSTGRE_SQL)
     target_link_libraries(${PostgreSQL_Name} PRIVATE CURL::libcurl libpqxx::pqxx)
     
     list(APPEND LIST_EXTENSION_PROJECTS ${PostgreSQL_Name})
+endif()
+if (ENABLE_PDF_EDITOR)
+    find_package(PoDoFo CONFIG REQUIRED)
+
+    set(PdfEditor_Name ${PROJECT_NAME}_PdfEditor)
+
+    add_library(${PdfEditor_Name} SHARED ${AddInNative_SRC} "include/extensions/pdfEditor.hpp" "src/extensions/pdfEditor.cpp")
+    
+    target_compile_definitions(${PdfEditor_Name} PRIVATE ENABLE_PDF_EDITOR=true)
+    target_link_libraries(${PdfEditor_Name} PRIVATE podofo::podofo)
+    
+    list(APPEND LIST_EXTENSION_PROJECTS ${PdfEditor_Name})
 endif()
 
 # Общие параметры библиотек
