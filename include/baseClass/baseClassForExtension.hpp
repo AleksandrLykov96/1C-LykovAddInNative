@@ -40,6 +40,13 @@
 // При передаче даты из 1С / в 1С нумерация идёт с 1900 года
 #define START_YEAR_1C 1900
 
+// Да, в STD есть этот разделитель, но он wchar (на WIN)
+#ifdef _WIN32
+	#define FILE_SEPARATOR '\\'
+#else
+	#define FILE_SEPARATOR '/'
+#endif
+
 namespace native1C {
 
 	// Вспомогательные типы данных

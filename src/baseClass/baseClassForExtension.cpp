@@ -1140,13 +1140,7 @@ void IBaseExtensionClass::p_SetupLoggingToFile() {
 	if (!debuggingMode || logsInitialize)
 		return;
 
-#ifdef _WIN32
-	constexpr auto separator = '\\';
-#else
-	constexpr auto separator = '/';
-#endif
-
-	const auto fileName = filesystem::temp_directory_path().string() + separator + gl_conv_wstring_to_string(getNameExtension()) + ".log";
+	const auto fileName = filesystem::temp_directory_path().string() + FILE_SEPARATOR + gl_conv_wstring_to_string(getNameExtension()) + ".log";
 
 	init(plog::debug, fileName.c_str());
 	log1C(plog::info, L"Начало логирования");

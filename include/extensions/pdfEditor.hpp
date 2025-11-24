@@ -24,7 +24,7 @@ protected:
 private:
 	native1C::all_returned_types rewritePDF(const native1C::all_input_types&); // ѕерезапись PDF с новым форматом
 
-	static std::string getBaseFilename(const std::string&);
+	static std::wstring getBaseFilename(const std::wstring&);
 };
 
 #endif
